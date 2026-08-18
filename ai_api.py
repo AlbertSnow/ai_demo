@@ -2,11 +2,13 @@ import os
 import io
 import asyncio
 import base64
+from langchain_core.callbacks import get_usage_metadata_callback
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from pydantic import SecretStr
 from PIL import Image
+from langchain_core.callbacks.usage import UsageMetadataCallbackHandler
 
 load_dotenv()
 
@@ -44,13 +46,17 @@ def get_ai_conversation():
     print(response.content)
 
 def get_tuple_conversation():
-    response = llm.invoke([
-        {"role": "system", "content": "You are a helpful assistant. You name is Json"},
-        {"role": "user", "content": "My name is Felx"},
-        {"role": "assistant", "content": "Hello. How can I help you today?"},
-        {"role": "user", "content": "What is the name of mine."}
-    ])
-    print(response.content)
+    print("profile: ", llm.profile)
+    with get_usage_metadata_callback() as cb:
+        response = llm.invoke([
+            {"role": "system", "content": "You are a helpful assistant. You name is Json"},
+            {"role": "user", "content": "My name is Felx"},
+            {"role": "assistant", "content": "Hello. How can I help you today?"},
+            {"role": "user", "content": "What is the name of mine."}
+        ])
+        print(response.content)
+        print("print metadata:")
+        print(cb.usage_metadata)
 
 
 def get_dict_conversation():
@@ -123,6 +129,8 @@ def get_batch_response():
         print(f"Question: {question}")
         print(f"Response: {response.content}")
 
+
+
 def _encode_image(image_path: str, max_size: int = 1024) -> str:
     with Image.open(image_path) as img:
         img = img.convert("RGB")
@@ -148,8 +156,8 @@ def get_picture_response(image_path: str = "view_pic.jpeg", prompt: str = "æè¿
 if __name__ == "__main__":
     # get_ai_response("What is the capital of China?")
     # get_ai_conversation()
-    # print("---------------Tuple-----------------")
-    # get_tuple_conversation()
+    print("---------------Tuple-----------------")
+    get_tuple_conversation()
     # print("---------------Dict-----------------")
     # get_dict_conversation()
     # print("---------------Template-----------------")
@@ -160,8 +168,8 @@ if __name__ == "__main__":
     # get_stream_response()
     # print("---------------Async Stream Event-----------------")
     # asyncio.run(get_async_stream_event_responce())
-    print("---------------Batch-----------------")
+    # print("---------------Batch-----------------")
     # get_batch_response()
-    print("---------------Picture-----------------")
-    get_picture_response()
+    # print("---------------Picture-----------------")
+    # get_picture_response()
     print("---------------End-----------------")
