@@ -1,0 +1,15 @@
+# PyTorch / MobileNetV4 训练脚本专用（请用 Python 3.12 的 .venv-torch）
+# 创建: uv venv .venv-torch --python 3.12 && source .venv-torch/bin/activate
+# 安装: uv pip install -r requirements-torch.txt
+
+numpy<2
+timm
+torch
+torchvision
+pillow
+tqdm
+onnxscript
+onnx2tf
+# ai-edge-litert 在 Intel Mac (macosx_26 x86_64) 上暂无 wheel，仅 arm64/Linux/Windows
+# 需要 LiteRT 验证时请在对应平台安装，或注释掉脚本中的 ai_edge_litert 相关代码
+# ai-edge-litert
